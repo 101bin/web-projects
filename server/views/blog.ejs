@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Официальный практический блог</title>
+		<link rel="stylesheet" href="assets/css/styles.css">
+	</head>
+	<body>
+		<header id="hlogo">
+			<label id="logo"><h3>Person's blog</h3></label>
+			<nav id="menu">
+				<menu>
+					<li><a href="blog.html">Главная</a></li>
+					<li><a href="#">Свежие новости</a></li>
+					<li><a href="#">Новости</a></li>
+					<li><a href="#">Контакты</a></li>
+					<li><a href="/logout">Выйти</a></li>
+				</menu>
+			</nav>
+		</header>
+		<div id = "wrapper">
+			<header></header>
+			<main>
+				<aside>
+					<label><h4><%= username %></h4></label>
+				</aside>
+				<section>
+					<header>
+						<textarea name="message" id="area" rows="5" cols="70" placeholder="Please, enter the message..."></textarea>
+						<input type="button" id="send" class="btn btn-primary" value="Send"/>
+					</header>
+					<div id="messages">
+						<%;
+							messages.sort();
+							messages.reverse();
+						%>
+						<% for(var i = 0; i < messages.length; i++){ %>
+							<article idf=<%= messages[i]._id %>>
+								<time><%= messages[i].date %></time>
+<!-- 								<header>
+									<%= messages[i].message %>
+								</header> -->
+								<div class="content">
+									<%= messages[i].message %>
+								</div>
+								<footer>
+									<div class="top"></div>
+									<div class="body">
+										<span>
+											Добавил: <b style="color:brown;"><%= messages[i].from %></b>
+											Дата: <%= messages[i].date %>
+										</span>
+										<span class="cm_count">
+											<input class="com_icon" type="image" src="assets/img/comment.png"><span>(<%if (comments[messages[i]._id]) {%><%=comments[messages[i]._id].length%><%} else {%>0<%}%>)</span>
+										</span>
+									</div>
+									<div class="botm"></div>
+								</footer>
+								<div class="comments">
+									<textarea class="c_area" rows="1"></textarea>
+									<input type="button" class="com_send" value="Send">
+									<div class="cm_content">
+										<%
+										if (comments[messages[i]._id]) {
+											comments[messages[i]._id].sort();
+											comments[messages[i]._id].reverse();
+											for(var j = 0; j < comments[messages[i]._id].length; j++) {%>
+												<article>
+													<span data="date">
+														<%= comments[messages[i]._id][j].date %>
+														/
+														<%= comments[messages[i]._id][j].from %>
+													</span>
+													<%= comments[messages[i]._id][j].message %>
+												</article>
+											<%}
+										}%>
+										
+										<!-- article>
+											BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
+											<span data="date">12-11-2015</span>
+										</article> -->
+									</div>
+								</div>
+							</article>
+						<%}%>		
+					</div>	
+				</section>
+			</main>
+		</div>
+		<footer>
+			
+		</footer>
+		<script type="text/javascript" src="assets/script/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="assets/script/jquery-ui.min.js"></script>
+		<!-- <script type="text/javascript" src="assets/script/blog.js"></script> -->
+		<script type="text/javascript">
+			$(function(){
+				// var $comment = $('.com_icon input[type="image"]');
+	   //      	var $comments = $('.comments');
+	   //      	var $cm_area = $('.c_area');
+	   //      	var $cm_content = $('.cm_content');
+	        	var $cm_open = $(".com_icon");
+	        	$cm_open.each(function(index, el) {
+	        		// console.log(index + " " + el + " " + $(el));
+	        		$(el).click(function(e) {
+	        			var $target = $(e.target);
+	        			$target.parent().parent().parent().next().toggle("slide", {direction:"up"});
+	        		});
+	        	});
+	        	var eventCmSend = function(e) {
+	        			var $target = $(e.target).next();
+	        			var $area = $(e.target).prev();
+	        			var textDate = new Date().toLocaleFormat("%b %e %Y %H:%M:%S");
+	        			var user = "<%= username %>";
+	        			$target.prepend($("<article />").append($('<span />').text(textDate+" / "+user).attr('data','date')).append($('<div />').text($area.val())));
+	        			//Set ajax request to server: /comment
+	        			var $idf = $target.parent().parent().attr("idf");
+	        			console.log($idf);
+	        			$.post("/comment", {post: $idf, message: $area.val(), date: textDate, from: user}).fail(function(){
+	        				console.log("Fail anywhere from /commnet");
+	        			});
+	        			$area.val("");
+	        			var $cm_count = $target.parent().prev().children('.body').children().children()[2];
+	        			var cnt = $($cm_count).text().trim();
+	        			cnt = cnt.substring(1,(cnt.length-1));
+	        			$($cm_count).text("("+(parseInt(cnt)+1)+")");
+	        			// $cm_count.attr("border","1px solid black");
+	        	};
+	        	var $cm_send = $(".com_send");
+	        	$cm_send.each(function(index, el){
+	        		$(el).click(function(e){eventCmSend(e)});
+	        	});
+	        	// $comment.click(function(e){
+	        	// 	$comments.toggle('slide', {direction:"up"});
+	        	// });
+	        	// $cm_post.click(function(e) {
+	        	// 	$cm_content.prepend($('<article />').text($cm_area.val()));
+	        	// });
+				$('#send').click(function(event) {
+					var $newEl = $("<article></article>");
+					var textDate = new Date().toLocaleFormat("%b %e %Y\n%H:%M:%S");
+					var $time = $("<time />", {text:textDate});
+					$newEl.append($time);
+					var $div = $('<div />', {
+						class:'content',
+						text: $('#area').val() 
+					});
+					$newEl.append($div);
+					var $footer = $('<footer />');
+					$footer.append($('<div />', {
+						class:"top"
+					}));
+					var $ftbody = $('<div />', {
+						class:"body"
+					});
+					$ftbody.append($("<span />").html("Добавил: <b style='color:brown;'><%= username %></b> Дата: "+textDate)); 
+					var $span = $("<span />", {class: "cm_count"});
+					var $t_image = $("<input />", {class: "com_icon", type: "image", src:"assets/img/comment.png"});
+					$t_image.click(function(e) {
+	        		// console.log(index + " " + el + " " + $(el));
+		        		var $target = $(e.target);
+		        		$target.parent().parent().parent().next().toggle("slide", {direction:"up"});
+	        		});
+	        		$span.append($t_image);
+
+	        		$span.append($("<span />").text("(0)"));
+
+					$ftbody.append($span);
+					$footer.append($ftbody);
+					$footer.append($('<div />', {
+						class:"botm"
+					}));
+					$newEl.append($footer);
+
+					$div = $('<div />', {
+						class: "comments"
+					});
+
+					$div.append($('<textarea />', {
+						class:"c_area",
+						rows: "1"
+					}));
+
+					var $sendCm = $('<input />', {
+						type:"button",
+						class: "com_send",
+						value: "Send"
+					});
+
+					$sendCm.click(function(e){eventCmSend(e)});
+
+					$div.append($sendCm);
+
+					var $n_cm_content = $('<div />', {class:"cm_content"});
+					$div.append($n_cm_content);
+
+					$newEl.append($div);
+
+					$('#messages').prepend($newEl);
+					$.post("/message",{message:$('#area').val(),date:textDate,from:'<%= username %>'}, function success(data) {
+						$newEl.attr('idf', data);
+					}).fail(function(){
+						console.log('Fail');
+					}).done(function(){
+						$('#area').val('');
+						console.log("success");
+					});
+				});
+				$('#exit').click(function(event){
+					$.get("/logout");
+				});
+			});
+		</script>
+	</body>
+</html>
+

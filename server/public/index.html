@@ -1,0 +1,313 @@
+<!doctype html>
+<!-- EJS template -->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Enter to blog</title>
+        <style>
+            body {
+                /*padding: 10% 0;*/
+                height: 100%;
+                background-color: #DCB685;
+            }
+ /*           #e_head {
+                padding: 10px;
+                padding-bottom: 0px;
+            }*/
+            main {
+                position: relative;
+                width: 800px;
+                margin: 0 auto;
+                padding: 5% 0;
+            }
+            #enter, #reg {
+                float: left;
+                width: 300px;
+                border-radius: 5px;
+                border-width: 0px;
+                background-color: #C1EAEC;
+                height: 207px;
+            } 
+            #enter {
+                background-color: skyblue;
+                /*padding: 9% 0;*/
+            }
+            fieldset {
+                border-width: 0px;
+            }   
+            #submit {
+                width:100px;
+                background-color: #005BC2;
+                color: white;
+                font-size: 14px;
+                outline: none;
+                float: right;
+            }
+            form {
+                padding-bottom: 5px;
+            }
+            input, label, span {
+                border-radius: 5px;
+                padding: 2px;
+                margin: 5px;
+            }
+            input[type="submit"] {
+                width: 100px;
+            }
+            #enter header, #reg header {
+                display: inline-block;
+                margin-bottom: 5px;
+                padding-left: 17px;
+                padding-top: 10px;
+            }
+            /*#e_head, #r_head {
+                display: inline-block;
+                margin-bottom: 5px;
+                padding-left: 17px;
+                padding-top: 10px;
+            }*/
+            input[type="button"] {
+                background-color: #005BC2;
+                color: white;
+                font-size: 14px;
+                outline: none;
+            }
+            #reg {
+                display: none;
+                position: absolute;
+                left: 300px;
+                top: 67px;
+                /*margin-top: -20px;*/
+                /*float: right;*/
+            }
+            #enter form label, #reg form label {
+                color: red;
+                display: none;
+            }
+            #error {
+                color:red;
+                display:none;
+            }
+            #timg {
+                z-index: -1;
+            }
+            #enter, #reg{
+                padding: 70px 0;
+            }
+        </style>
+    </head>
+
+    <body> 
+        <main>
+            <div id="enter">
+                <header>
+                    <img src="assets/img/lock.png" alt="Error" style="float:left;"/><label>Вход в микроблог</label>
+                </header>
+                <form action="/enter" method="POST" id="form">
+                    <fieldset>
+                        <input type="text" class="e_check" placeholder="Enter username" size="35" name="username"/> <label>Invalid username</label><br/>
+                        <input type="password" class="e_check"  placeholder="Enter password" size="35" name="password"/> <label>Invalid password</label> <br/>
+                        <input type="email" class="e_check" placeholder="Enter email" size="35" name="email"/> <label>Invalid email</label> <br/>
+                        <input type="button" id="e_reg" style="clear:right;" value="Регистрация"/>
+                        <input type="submit" id="submit" value="Войти"/>
+                    </fieldset>
+                </form>     
+            </div>
+            <div id="timg">
+                <img src="assets/img/main.png" alt="Main Page"/>
+            </div>
+            <div id="reg">
+                <header>
+                    <img src="assets/img/reg2.png" alt="Error" style="float:left;"/><label>Регистрация</label>
+                </header>
+                <form id="r_form">
+                    <fieldset>
+                        <input type="text" class="r_check" placeholder="Enter username" size="35"/> <label>Invalid username</label> <span id="error"> This username is taken!</span> <br/>
+                        <input type="password" class="r_check"  placeholder="Enter password" size="35"/> <label>Invalid password</label> <br/>
+                        <input type="email" class="r_check" placeholder="Enter email" size="35"/> <label>Invalid email</label> <br/>
+                        <input type="button" id="cancel" value="Отмена" />
+                        <input type="button" style="float: right;" id="acpt_reg" value="Зарегистрировать"/>
+                    </fieldset>
+                </form>     
+            </div>
+        </main>
+        <script type="text/javascript" src="assets/script/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="assets/script/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="assets/script/jquery.md5.js"></script>
+        <script type="text/javascript">
+            $(function(){
+                var $e_labels = $("#enter form label");
+                var $r_labels = $("#reg form label");
+                var $e_fields = $(".e_check");
+                var $r_fields = $(".r_check");
+                var key = "thebestkeyever";
+                resetForms(false);
+                var cForm = {
+                    username:true,
+                    password: true,
+                    email: true
+                };
+                var rForm = {
+                    username:true,
+                    password: true,
+                    email: true
+                };
+                var rPass = new RegExp("[a-zA-Z0-9]+");
+                var rName = new RegExp("[a-zA-Z]+");
+                var rEmail = new RegExp("^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$");
+                var regExps = [rName, rPass, rEmail];
+                var $error = $("#error");
+                var check = function(e, uv, reg, obj, ind) {
+                    $error.css("display","none");
+                    if (e.target.value.length < 5 || !e.target.value.match(reg)) {
+                        e.target.style.border = "1px solid red";
+                        uv.style.display = "inline";
+                        switch(ind){
+                            case 1:
+                                obj.username = false;
+                                break;
+                            case 2:
+                                obj.password = false;
+                                break;
+                            case 3:
+                                obj.email = false;
+                                break;
+                            default:
+                                alert("No that number");
+                                break;
+                        }
+                    } else {
+                        e.target.style.border = "";
+                        uv.style.display = "none";
+                        switch(ind){
+                            case 1:
+                                obj.username = true;
+                                break;
+                            case 2:
+                                obj.password = true;
+                                break;
+                            case 3:
+                                obj.email = true;
+                                break;
+                            default:
+                                alert("No that number");
+                                break;
+                        }
+                    }
+                };
+
+                $("#e_reg").click(function() {
+                    $('#reg').toggle('slide', {direction: "left"}).promise().done(function() {
+                        resetForms(true);
+                    });
+                });
+
+                $("#cancel").click(function() {
+                    $('#reg').hide('slide', {direction: "up"}).promise().done(function() {
+                        resetForms(true);
+                    });
+                });
+
+                $e_fields.each(function(index, el) {
+                    $(el).blur(function(event) {
+                        check(event, $e_labels[index], regExps[index], cForm, index+1);    
+                    });
+                });
+
+                $r_fields.each(function(index, el) {
+                    $(el).blur(function(event) {
+                        check(event, $r_labels[index], regExps[index], rForm, index+1);
+                    });                    
+                });
+
+                function resetForms(reg) {
+                    if (!reg) {
+                        $r_fields.each(function(index, el) {
+                            $(el).val('');    
+                            $(el).css('border','');                
+                        });
+                        $e_fields.each(function(index, el) {
+                            $(el).val('');         
+                            $(el).css('border','');           
+                        });
+                        $e_labels.each(function(index, el) {         
+                            $(el).css('display','none');           
+                        });
+                        $r_labels.each(function(index, el) {         
+                            $(el).css('display','none');           
+                        });
+                        $("error").css("display", "none");
+                    } else {
+                        $r_fields.each(function(index, el) {
+                            $(el).val('');    
+                            $(el).css('border','');                
+                        });
+                        $r_labels.each(function(index, el) {         
+                            $(el).css('display','none');           
+                        });
+                        $("error").css("display", "none");
+                    }
+                };
+
+                $("#form").submit(function(e){
+                    if (!cForm.username || !$e_fields[0].value) {
+                        console.log(cForm.username + " " + $($e_fields[0]).val() + " " + $e_fields[0]);
+                        $($e_fields[0]).css('border','1px solid red');
+                        $($e_labels[0]).css('display', 'inline');
+                        e.preventDefault();
+                    } 
+                    if (!cForm.password || !$e_fields[1].value) {
+                        console.log(cForm.username + " " + $($e_fields[1]).val() + " " + $e_fields[1]);
+                        $($e_fields[1]).css('border','1px solid red');
+                        $($e_labels[1]).css('display', 'inline');
+                        e.preventDefault();
+                    }
+                    if (!cForm.email || !$e_fields[2].value) {
+                        console.log(cForm.username + " " + $($e_fields[2]).val() + " " + $e_fields[2]);
+                        $($e_fields[2]).css('border','1px solid red');
+                        $($e_labels[2]).css('display', 'inline');
+                        e.preventDefault();
+                    }
+                    $(this).append($('<input />', {name:"hpass",value:$.md5($e_fields[1].value, key)}).attr('type','hidden'));
+                    $e_fields[1].value = '';
+                }); 
+
+                $("#acpt_reg").click(function(e){
+                    var fail = false;
+                    $error.css("display","none");
+                    if (!rForm.username || !$r_fields[0].value) {
+                        console.log(rForm.username + " " + $($r_fields[0]).val() + " " + $r_fields[0]);
+                        $($r_fields[0]).css('border','1px solid red');
+                        $($r_labels[0]).css('display', 'inline');
+                        fail = true;
+                    } 
+                    if (!rForm.password || !$r_fields[1].value) {
+                        console.log(rForm.username + " " + $($r_fields[1]).val() + " " + $r_fields[1]);
+                        $($r_fields[1]).css('border','1px solid red');
+                        $($r_labels[1]).css('display', 'inline');
+                        fail = true;
+                    }
+                    if (!rForm.email || !$r_fields[2].value) {
+                        console.log(rForm.username + " " + $($r_fields[2]).val() + " " + $r_fields[2]);
+                        $($r_fields[2]).css('border','1px solid red');
+                        $($r_labels[2]).css('display', 'inline');
+                        fail = true;
+                    }
+                    if (!fail) {
+                        console.log("not fail");
+                        $.post('/reg', {"username":$r_fields[0].value,"password":$.md5($r_fields[1].value, key),"email":$r_fields[2].value}, function(data) {
+                            if (data == 'OK') {
+                                $('#reg').hide('slide', {direction: "left"});
+                                resetForms(true);    
+                            } else {
+                                $error.css("display","inline");
+                            }
+                        });
+                    } else {
+                        console.log("fail");
+                    }
+                });    
+            });
+        </script>
+    </body>
+</html>

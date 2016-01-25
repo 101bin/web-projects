@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<title>Error page</title>
+	</head>
+	<body>
+		<center>
+		<h1>Hey, <%= username%>! Your username, password or email is incorrect! Please, return on main page and enter correct data!</h1> <br/>
+		<h1>
+			Your data:<br/>
+			username: <%= username%> <br/>
+			password: <%for(var i = 0; i < password.length; i++) {%>*<%}%><br/>
+			email: <%= email %>
+		</h1>
+		<h2><a href="index.html">Enter new data!</a></h2>
+		</center>
+	</body>
+</html>

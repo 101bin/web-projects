@@ -1,0 +1,68 @@
+<html>
+    <head>
+        <title>Вход в ToDoList</title>
+        <meta charset="UTF-8">	
+        <link rel="stylesheet" href="assets/todo.css" />
+	<link rel="stylesheet" href="lib/Bootstrap/bootstrap.min.css" />
+        <link rel="stylesheet" href="lib/jQuery/jquery.ui.min.css" />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+	<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+	<style>
+  	  .ui-tooltip {
+    color: white;
+    border-radius: 20px;
+    font: bold 12px "Helvetica Neue", Sans-Serif;
+    text-transform: uppercase;
+    box-shadow: 0 0 7px black;
+  }
+	.ui-tooltip-content {
+		color: orange;
+	}
+  	</style>
+  	<script>
+  $(function() {
+    var tooltips = $( "[title]" ).tooltip({
+      position: {
+        my: "left top",
+        at: "right+7 top-8"
+      }
+    });
+  });
+  </script>
+    </head>
+    <body>
+        <div id="container">
+	<div id="shake_box">
+        <div id="enter">
+        <form id="frm_enter">
+            <h4>Авторизация</h4>
+            <input type="text" placeholder="Login" size="29" name="login" id="ent_login"/> <br/>
+            <input type="password" placeholder="Password" size="29" name="passw" id="ent_passw"/> <br/>
+	<div class="wrapper">
+            <input type="button" class="btn btn-primary" id="ent_btn" value="Вход"/>
+            <input type="button" class="btn btn-primary" id="reg_btn"  value="Регистрация"/>
+	</div>        
+	</form>
+	<div id="reg">
+            <h4>Регистрация</h4>
+            <form id="frm_reg">
+                <input type="text" placeholder="Login" size="29" class="check" id="login" title="Символов должно быть больше 4" name="login" >
+                <br/>
+                <input type="password" placeholder="Password" size="29" class="check" id="pass" title="Символов должно быть больше 4" name="passw" > <br/>
+                <input type="password" placeholder="Repeated password" size="29" class="check" id="rpass" title="Символов должно быть больше 4" > <br/>
+	<div class="wrapper">
+                <input type="button" class="btn btn-primary" value="Отправить" id="reg_accept" >
+                <input type="button" value="Отмена" class="btn btn-primary" id="reg_cancel" >
+	</div>
+            </form>
+        </div>
+        </div>
+        </div>
+	</div>
+	<script type="text/javascript" src="lib/jQuery/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/jQuery/jquery.ui.min.js"></script>
+        <script type="text/javascript" src="assets/todo.js"></script>
+        <script type="text/javascript" src="assets/enter.js"></script>   
+    </body>
+</html>
